@@ -1,9 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:workout_tracker/pages/landing_page.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:dart_json_mapper/dart_json_mapper.dart' show JsonMapper;
+import 'package:dart_json_mapper_mobx/dart_json_mapper_mobx.dart'
+    show mobXAdapter;
+import 'package:workout_tracker/config/colors.dart';
+import 'package:workout_tracker/screens/landing_screen.dart';
+import 'package:workout_tracker/screens/progression/progression_screen.dart';
+import 'package:workout_tracker/screens/workout_routines/workout_routines_screen.dart';
+import 'package:workout_tracker/screens/workouts/workouts_screen.dart';
+import 'package:workout_tracker/stores/preference-store/preference-store.dart';
+
+import 'main.reflectable.dart' show initializeReflectable;
 
 void main() {
+  initializeReflectable();
+  JsonMapper().useAdapter(mobXAdapter);
+
   runApp(WorkoutApp());
+  getStore().loadFromPreferences();
 }
 
 class WorkoutApp extends StatelessWidget {
@@ -12,54 +27,26 @@ class WorkoutApp extends StatelessWidget {
     return MaterialApp(
       title: 'Edzés segéd',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.red,
         visualDensity: VisualDensity.adaptivePlatformDensity,
+        scaffoldBackgroundColor: Colors.grey[400],
+        splashColor: Color.fromARGB(128, 80, 80, 80),
       ),
-      home: LandingPage(),
       supportedLocales: <Locale>[Locale("hu", "HU")],
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
       ],
       locale: Locale("hu", "HU"),
-    );
-  }
-}
-
-class _MyHomePageState extends State<LandingPage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(""),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ),
+      routes: {
+        WorkoutsScreen.routeName: (BuildContext context) => WorkoutsScreen(),
+        WorkoutRoutinesScreen.routeName: (BuildContext context) =>
+            WorkoutRoutinesScreen(),
+        LandingScreen.routeName: (BuildContext context) => LandingScreen(),
+        ProgressionScreen.routeName: (BuildContext context) =>
+            ProgressionScreen()
+      },
+      initialRoute: LandingScreen.routeName,
     );
   }
 }

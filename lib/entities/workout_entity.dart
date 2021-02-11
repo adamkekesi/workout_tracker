@@ -1,3 +1,0 @@
-class WorkoutEntity {
-  String name;
-}
